@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<item android:id="@+id/item1"
+    android:title="item1"
+    app:showAsAction="ifRoom"/>
+    <!--
+    showAsAction:如果toolbar有足够的空间，则把该选项的图标设置在toolbar上，如果没有设置icon那么显示文字
+    -->
+    <group>
+        <item android:id="@+id/item2"
+            android:title="item2"
+            android:icon="@mipmap/ic_launcher"
+            app:showAsAction="ifRoom"/>
+        <item android:id="@+id/item3"
+            android:icon="@mipmap/ic_launcher"
+            android:title="item3"
+            app:showAsAction="ifRoom"/>
+    </group>
+</menu>

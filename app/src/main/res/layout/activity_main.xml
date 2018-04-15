@@ -15,11 +15,12 @@
     app:subtitle=""
     app:logo="@null"
     app:popupTheme="@style/popMenuStyle">
+    <!--若要使标题居中，需要设置layout_gravity="center"-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="hello"/>
+        android:layout_gravity="center"
+        android:text="大家好"/>
 </android.support.v7.widget.Toolbar>
 
 <TextView

@@ -1,4 +1,4 @@
-package alien.com.httputil;
+package alien.com.net;
 
 /**
  * Created by Alien on 2018-04-09.
@@ -13,5 +13,9 @@ public class HttpConstant {
      * Setting requset timeout
      */
     public static Long DEFAULT_TIMEOUT=2000L;
+
+    public static int RESULT_SUCCESS_CODE=100;
+
+    public static int RESULT_FAILED_CODE=200;
 
 }

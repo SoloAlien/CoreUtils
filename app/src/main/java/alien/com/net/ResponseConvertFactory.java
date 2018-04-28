@@ -1,4 +1,4 @@
-package alien.com.httputil;
+package alien.com.net;
 import com.google.gson.Gson;
 
 import java.lang.annotation.Annotation;

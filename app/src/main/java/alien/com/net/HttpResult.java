@@ -1,4 +1,4 @@
-package alien.com.entity;
+package alien.com.net;
 
 /**
  * Created by Alien on 2018-04-09.

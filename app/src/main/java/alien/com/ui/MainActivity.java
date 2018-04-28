@@ -1,6 +1,7 @@
 package alien.com.ui;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -11,34 +12,32 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import alien.com.entity.HttpResult;
+import alien.com.net.HttpCallBack;
+import alien.com.net.HttpResult;
 import alien.com.entity.Test;
 import alien.com.entity.UserInfo;
-import alien.com.httputil.FileUploadUtil;
-import alien.com.httputil.HttpUtil;
-import alien.com.httputil.R;
+import alien.com.net.FileUploadUtil;
+import alien.com.net.HttpUtil;
+import alien.com.net.R;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
     private Button button, uploadbutton;
     private TextView text;
     private Toolbar titlebar;
     private Menu menu;
+    private Context mContext;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         titlebar = findViewById(R.id.titlebar);
-
+        mContext=this;
 
         //加载弹出菜单布局
         titlebar.inflateMenu(R.menu.menu);
@@ -73,18 +72,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 retrofit2.Call<HttpResult<UserInfo>> call = HttpUtil.getInstance().getApi().getUserCount();
-                call.enqueue(new Callback<HttpResult<UserInfo>>() {
+                call.enqueue(new HttpCallBack<UserInfo>(mContext) {
                     @Override
-                    public void onResponse(retrofit2.Call<HttpResult<UserInfo>> call, Response<HttpResult<UserInfo>> response) {
-                        text.setText(response.body().getData().getUserCount() + "");
-                    }
-
-                    @Override
-                    public void onFailure(retrofit2.Call<HttpResult<UserInfo>> call, Throwable t) {
-                        Toast.makeText(MainActivity.this, "请求失败", Toast.LENGTH_SHORT).show();
-                        Log.e("TAG", "onFailure: " + t.getMessage());
+                    public void onSuccess(UserInfo userInfo) {
+                        text.setText(userInfo.getUserCount()+"");
                     }
                 });
+//                call.enqueue(new Callback<HttpResult<UserInfo>>() {
+//                    @Override
+//                    public void onResponse(retrofit2.Call<HttpResult<UserInfo>> call, Response<HttpResult<UserInfo>> response) {
+//                        text.setText(response.body().getData().getUserCount() + "");
+//                    }
+//
+//                    @Override
+//                    public void onFailure(retrofit2.Call<HttpResult<UserInfo>> call, Throwable t) {
+//                        Toast.makeText(MainActivity.this, "请求失败", Toast.LENGTH_SHORT).show();
+//                        Log.e("TAG", "onFailure: " + t.getMessage());
+//                    }
+//                });
             }
         });
 

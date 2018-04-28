@@ -1,12 +1,10 @@
-package alien.com.httputil;
+package alien.com.net;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import alien.com.entity.HttpResult;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 

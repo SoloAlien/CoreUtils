@@ -12,10 +12,14 @@ public class HttpConstant {
     /**
      * Setting requset timeout
      */
-    public static Long DEFAULT_TIMEOUT=2000L;
-
+    public static Long DEFAULT_TIMEOUT=30L;
+    /**
+     * request success code
+     */
     public static int RESULT_SUCCESS_CODE=100;
-
+    /**
+     * request fail code
+     */
     public static int RESULT_FAILED_CODE=200;
 
 }

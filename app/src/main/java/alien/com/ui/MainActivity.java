@@ -11,14 +11,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import alien.com.entity.HttpResult;
 import alien.com.entity.Test;
 import alien.com.entity.UserInfo;
+import alien.com.httputil.FileUploadUtil;
 import alien.com.httputil.HttpUtil;
 import alien.com.httputil.R;
 import okhttp3.MediaType;
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         titlebar = findViewById(R.id.titlebar);
+
 
         //加载弹出菜单布局
         titlebar.inflateMenu(R.menu.menu);
@@ -90,23 +95,48 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "hello.txt");
-                RequestBody requestFile =
-                        RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                MultipartBody.Part part = FileUploadUtil.fileToMultiBodyPart(file);
 
-                // MultipartBody.Part  和后端约定好Key，这里的partName是用image
-                MultipartBody.Part body = MultipartBody.Part.createFormData("myfile", file.getName(), requestFile);
-
-
-                retrofit2.Call<HttpResult<Test>> call = HttpUtil.getInstance().getApi().getUploadInfo(body);
+                retrofit2.Call<HttpResult<Test>> call = HttpUtil.getInstance().getApi().getUploadInfo(part);
                 call.enqueue(new Callback<HttpResult<Test>>() {
                     @Override
                     public void onResponse(Call<HttpResult<Test>> call, Response<HttpResult<Test>> response) {
-                        Toast.makeText(MainActivity.this, ""+response.body().getData().getResult(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "" + response.body().getData().getResult(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onFailure(Call<HttpResult<Test>> call, Throwable t) {
-                        Log.e("TAG", "onFailure: "+t.getMessage() );
+                        Log.e("TAG", "onFailure: " + t.getMessage());
+                    }
+                });
+            }
+        });
+
+
+        findViewById(R.id.filesUpload).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "one.txt");
+                File file1 = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "two.txt");
+                File file2 = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "three.txt");
+                ArrayList<File> files = new ArrayList<>();
+                files.add(file);
+                files.add(file1);
+                files.add(file2);
+                ArrayList<MultipartBody.Part> parts = (ArrayList<MultipartBody.Part>) FileUploadUtil.filesToMultipartBodyParts(files);
+                RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "图片的描述");
+
+
+                Call<HttpResult<Test>> call = HttpUtil.getInstance().getApi().getFilesUpload(parts, description);
+                call.enqueue(new Callback<HttpResult<Test>>() {
+                    @Override
+                    public void onResponse(Call<HttpResult<Test>> call, Response<HttpResult<Test>> response) {
+                        Toast.makeText(MainActivity.this, "" + response.body().getData().getResult(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<HttpResult<Test>> call, Throwable t) {
+                        Log.e("TAG", "onFailure: " + t.getMessage());
                     }
                 });
             }

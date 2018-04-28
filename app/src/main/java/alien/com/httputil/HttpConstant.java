@@ -8,7 +8,7 @@ public class HttpConstant {
     /**
      * Setting base request url
      */
-    public static String BASE_URL="http://192.168.0.103:8081/AppFrame/";
+    public static String BASE_URL="http://192.168.0.117:8081/AppFrame/";
     /**
      * Setting requset timeout
      */

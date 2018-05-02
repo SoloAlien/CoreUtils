@@ -1,11 +1,13 @@
 package alien.com.net;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.JsonSyntaxException;
 
+import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.net.UnknownServiceException;
@@ -22,15 +24,19 @@ import retrofit2.Response;
 
 public abstract class HttpCallBack<T> implements Callback<HttpResult<T>> {
     private Context mContext;
+    LoadingDialog loadingDialog;
 
     public HttpCallBack(Context context) {
         mContext = context;
+        loadingDialog=new LoadingDialog(context);
+        loadingDialog.show();
     }
 
     public abstract void onSuccess(T t);
 
     @Override
     public void onResponse(Call<HttpResult<T>> call, Response<HttpResult<T>> response) {
+        loadingDialog.dismiss();
         if (response.isSuccessful()) { //code >= 200 && code < 300
             //When return code match our defined sucess code,return result
             if (HttpConstant.RESULT_SUCCESS_CODE == response.body().getCode()) {
@@ -43,6 +49,7 @@ public abstract class HttpCallBack<T> implements Callback<HttpResult<T>> {
 
     @Override
     public void onFailure(Call<HttpResult<T>> call, Throwable t) {
+        loadingDialog.dismiss();
         if (t instanceof JsonSyntaxException) {
             Log.e("TAG", "Json解析异常: " + t.getMessage());
         } else if (t instanceof SocketTimeoutException){
@@ -51,6 +58,8 @@ public abstract class HttpCallBack<T> implements Callback<HttpResult<T>> {
             Log.e("TAG", "主机解析异常: " + t.getMessage());
         }else if (t instanceof UnknownServiceException){
             Log.e("TAG", "未知服务器异常: " + t.getMessage());
+        }else if(t instanceof ConnectException){
+            Log.e("TAG", "网络连接异常: " + t.getMessage());
         } else if (t instanceof HttpException) {
             Log.e("TAG", "网络异常: " + t.getMessage());
         }else {

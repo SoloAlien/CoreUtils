@@ -42,8 +42,4 @@ public class HttpUtil {
         httpService = retrofit.create(ApiService.class);
         return httpService;
     }
-
-    public void enqueue(Call call,Callback<?> callback){
-       call.enqueue(callback);
-    }
 }

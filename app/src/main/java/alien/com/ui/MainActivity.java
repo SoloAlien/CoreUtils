@@ -2,6 +2,10 @@ package alien.com.ui;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +16,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.uuzuche.lib_zxing.activity.CaptureActivity;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar titlebar;
     private Menu menu;
     private Context mContext;
+    private static int REQUEST_CODE=100;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -71,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(mContext, "点中了", Toast.LENGTH_SHORT).show();
                 retrofit2.Call<HttpResult<UserInfo>> call = HttpUtil.getInstance().getApi().getUserCount();
                 call.enqueue(new HttpCallBack<UserInfo>(mContext) {
                     @Override
@@ -78,18 +88,6 @@ public class MainActivity extends AppCompatActivity {
                         text.setText(userInfo.getUserCount()+"");
                     }
                 });
-//                call.enqueue(new Callback<HttpResult<UserInfo>>() {
-//                    @Override
-//                    public void onResponse(retrofit2.Call<HttpResult<UserInfo>> call, Response<HttpResult<UserInfo>> response) {
-//                        text.setText(response.body().getData().getUserCount() + "");
-//                    }
-//
-//                    @Override
-//                    public void onFailure(retrofit2.Call<HttpResult<UserInfo>> call, Throwable t) {
-//                        Toast.makeText(MainActivity.this, "请求失败", Toast.LENGTH_SHORT).show();
-//                        Log.e("TAG", "onFailure: " + t.getMessage());
-//                    }
-//                });
             }
         });
 
@@ -99,19 +97,14 @@ public class MainActivity extends AppCompatActivity {
         uploadbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "hello.txt");
+                File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Honor.mp3");
                 MultipartBody.Part part = FileUploadUtil.fileToMultiBodyPart(file);
 
                 retrofit2.Call<HttpResult<Test>> call = HttpUtil.getInstance().getApi().getUploadInfo(part);
-                call.enqueue(new Callback<HttpResult<Test>>() {
+                call.enqueue(new HttpCallBack<Test>(mContext) {
                     @Override
-                    public void onResponse(Call<HttpResult<Test>> call, Response<HttpResult<Test>> response) {
-                        Toast.makeText(MainActivity.this, "" + response.body().getData().getResult(), Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(Call<HttpResult<Test>> call, Throwable t) {
-                        Log.e("TAG", "onFailure: " + t.getMessage());
+                    public void onSuccess(Test test) {
+                        Toast.makeText(MainActivity.this, "" + test.getResult(), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -146,6 +139,33 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+        findViewById(R.id.scan).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(MainActivity.this, CaptureActivity.class),REQUEST_CODE);
+            }
+        });
+
+        findViewById(R.id.generate).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String context="hello world!";
+                Bitmap bitmap=CodeUtils.createImage(context,300,300, BitmapFactory.decodeResource(Resources.getSystem(),R.mipmap.ic_launcher));
+                ((ImageView)findViewById(R.id.img)).setImageBitmap(bitmap);
+            }
+        });
 
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode==RESULT_OK&&requestCode==REQUEST_CODE){
+            if (null!=data){
+                String result=data.getStringExtra(CodeUtils.RESULT_STRING);
+                Toast.makeText(this, "result:"+result, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }
